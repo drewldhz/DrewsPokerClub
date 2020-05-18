@@ -1,6 +1,7 @@
 package sample;
 
 import com.sun.management.GarbageCollectionNotificationInfo;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -21,19 +22,24 @@ public class Player extends Thread{
     public ArrayList<Card> hand = new ArrayList<>(iHandSize);
     public ArrayList<Card> cardsOnTable = new ArrayList<>(5);
     private String name;
+    private int account = 10000;
+    volatile public static int acc = 10000;
+    //To do: make enum
     private final String requestBid = "your bid mr.";
     private final String requestFlop = "open flop";
     private final String requestTurn = "open turn";
     private final String requestRiver = "open river";
     String filePathCard = "D:/firstUI/src/assets/Deck/";
     Socket socket;
+    Stakes myBid = new Stakes(0, name);
+    public static int maxBid = 0;
 
     public static int counter = 0;
 
     Player(String name) throws IOException
     {
         vSetName(name);
-
+        Game.stakeSpin.setMax(account);
     }
 
 
@@ -53,7 +59,7 @@ public class Player extends Thread{
         //System.out.println(socket+" "+ this.name);
         int iCountCards = 0;
         while (true){
-
+            Game.vSetAccount(account);
             Object receivedMessage = null;
             try {
                 receivedMessage = receiveMessage();
@@ -86,18 +92,18 @@ public class Player extends Thread{
             //Open flop
             if(receivedMessage!=null && receivedMessage instanceof String && receivedMessage.equals(requestFlop)) {
                 //System.out.println(name +" "+ receivedMessage);
-                    try {
-                        Card card = receiveCard();
-                        File fileCard = new File(filePathCard + card.SUIT + "/" + card.rate + ".jpg");
-                        cardsOnTable.add(card);
-                        Game.chat.appendText("карта на flop : " + vCheckInstance(card)+"\n");
-                        System.out.println(name + " увидел карту на флопе : " + vCheckInstance(card) + ", карт на столе " + cardsOnTable.size());
-                        if (cardsOnTable.size() == 1) Game.f1.setImage(new Image(fileCard.toURI().toString()));
-                        if (cardsOnTable.size() == 2) Game.f2.setImage(new Image(fileCard.toURI().toString()));
-                        if (cardsOnTable.size() == 3) Game.f3.setImage(new Image(fileCard.toURI().toString()));
-                    } catch (IOException | ClassNotFoundException ex) {
-                        ex.printStackTrace();
-                    }
+                try {
+                    Card card = receiveCard();
+                    File fileCard = new File(filePathCard + card.SUIT + "/" + card.rate + ".jpg");
+                    cardsOnTable.add(card);
+                    Game.chat.appendText("карта на flop : " + vCheckInstance(card)+"\n");
+                    System.out.println(name + " увидел карту на флопе : " + vCheckInstance(card) + ", карт на столе " + cardsOnTable.size());
+                    if (cardsOnTable.size() == 1) Game.f1.setImage(new Image(fileCard.toURI().toString()));
+                    if (cardsOnTable.size() == 2) Game.f2.setImage(new Image(fileCard.toURI().toString()));
+                    if (cardsOnTable.size() == 3) Game.f3.setImage(new Image(fileCard.toURI().toString()));
+                } catch (IOException | ClassNotFoundException ex) {
+                    ex.printStackTrace();
+                }
             }
             //Open turn
             if(receivedMessage!=null && receivedMessage instanceof String && receivedMessage.equals(requestTurn)) {
@@ -130,26 +136,31 @@ public class Player extends Thread{
             //Request Bid
             if(receivedMessage!=null && receivedMessage instanceof Stakes/* && receivedMessage.equals(requestBid)*/){
                 //System.out.println(name +" "+ receivedMessage);
-                    //System.out.println(requestBid+" "+name);
-                    int maxBid = ((Stakes) receivedMessage).getRate();
-                    Game.stakeSpin.setMin(maxBid);
-                    Game.chat.appendText(requestBid+" "+name+" ?"+"\n");
-                    while(true){
-                        System.out.println(Game.bReadyStake);
-                        if(Game.bReadyStake) {
-                            System.out.println("Ставка сделана");
-                            break;
-                        }
+                //System.out.println(requestBid+" "+name);
+                Stakes stakes = (Stakes)receivedMessage;
+                //maxBid = ((Stakes) receivedMessage).getRate();
+                //Game.vSetBank(stakes.bank);
+                maxBid = stakes.getRate();
+                //Game.stakeSpin.setMin(maxBid);
+                Game.chat.appendText(requestBid+" "+name+" ?"+"\n");
+                while(true){
+                    System.out.println(Game.bReadyStake);
+                    if(Game.bReadyStake&&Game.iStake>=maxBid) {
+                        System.out.println("Ставка сделана");
+                        break;
                     }
-                    Integer bidResponse = Game.iStake;
+                }
+                Integer bidResponse = Game.iStake;
+                account=account-Game.iStake;
+
+                System.out.println(acc+" account status");
+     
 
                 Game.chat.appendText(bidResponse+"\n");
                 makeStake(bidResponse);
                 Game.bReadyStake = false;
 
-
-
-                }
+            }
 
             //}
             System.out.println(name+ " ждет дальнейших действий...");
@@ -199,10 +210,13 @@ public class Player extends Thread{
     }
 
     public void makeStake(int rate){
-        Stakes myBid = new Stakes(rate, name);
+        myBid.setRate(rate);
+        myBid.setAccountPlayer(account);
+        Game.vSetBank(account);
         //System.out.println(name+" делает ставку "+myBid.getRate());
         try {
             SendResponseToGameService(myBid);
+            Game.vSetAccount(account);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {

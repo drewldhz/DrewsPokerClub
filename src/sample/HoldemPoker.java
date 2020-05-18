@@ -12,13 +12,14 @@ import java.util.LinkedList;
 public class HoldemPoker {
     private final int handSize = 2;
     public ArrayList<Card> cardsOnTable = new ArrayList<>(5);
-    //public ArrayList<Socket> playerHands = new ArrayList<>();
+    public ArrayList<Socket> fauldPlayers = new ArrayList<>();
     public boolean gameState = true;//false-"over"
     public boolean cardsOnHand = false;
     public boolean flopOpened = false;
     public boolean turnOpened = false;
     public boolean riverOpened = false;
     public boolean bidding = false;
+    private int bank = 0;
     public static int maxBid = 0;
     public HoldemPoker(LinkedList<Socket> playerHands) throws IOException, ClassNotFoundException {
         String actualMessage = "";
@@ -176,14 +177,24 @@ public class HoldemPoker {
         for(Socket player: players){
             //Здесь лучше работать с объектом Stakes
             //sendMessage(player, "your bid mr.");
+            if(!fauldPlayers.isEmpty() && fauldPlayers.contains(player)){
+                System.out.println("игрок уже сбросил карты");
+                continue;
+            }
             sendMessage(player, new Stakes(maxBid,""));
             myBid = (Stakes) receiveMessage(player);
             bid = myBid.getRate();
             if(bid>maxBid)maxBid=bid;
+            else if(bid<0){
+                fauldPlayers.add(player);
+                System.out.println("fauld");
+                continue;
+            }
             System.out.println(bid+ " ставка от игрока "+myBid.getPlayerName());
-            System.out.println(maxBid+ " максимальная ставка");
+            bank+=bid;
         }
         bidding = true;
+        System.out.println(bank+ " очков в банке");
         System.out.println("Ставки приняты...");
     }
 

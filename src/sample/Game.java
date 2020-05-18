@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import javafx.animation.FadeTransition;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -88,6 +89,15 @@ public class Game {
 
     public static boolean fauld = false;
 
+    @FXML
+    private Label accountLabel;
+
+    public static Label accountScore;
+
+    @FXML
+    private Label bankScore;
+
+    public static Label bankLabel;
 
 
 
@@ -100,9 +110,11 @@ public class Game {
 
     @FXML
     void initialize() {
+        accountScore = accountLabel;
         stakeSpin = stakeSpinner;
+        bankLabel = bankScore;
         chat = chatArea;
-        chatArea.setText("Hello");
+        //chatArea.setText("Hello");
         f1 = firstFlop;
         f2 = secondFlop;
         f3 = thirdFlop;
@@ -117,12 +129,13 @@ public class Game {
         makeStake();
 
         applyButton.setOnMouseClicked(e->{
-            /*if((int)stakeSpin.getValue()>=HoldemPoker.maxBid)*/bReadyStake = true;
+            if(stakeSpinner.getValue()>=Player.maxBid)bReadyStake = true;
         });
 
         fauldButton.setOnMouseClicked(e->{
             //fauld = true;
             iStake = -1;
+            accountScore.setText(String.valueOf(Player.acc));
             bReadyStake = true;
         });
 
@@ -175,22 +188,6 @@ public class Game {
         }
         System.out.println(Deck.shuffledDeck.size()+" карт осталось в колоде");
     }
-    void extractTurn(){
-        Card card = Deck.extractCard();
-        //System.out.println(filePathCard+card.SUIT+"/"+card.rate+".jpg");
-        File fileCard = new File(filePathCard+card.SUIT+"/"+card.rate+".jpg");
-        turn.setImage(new Image(fileCard.toURI().toString()));
-        System.out.println(Deck.shuffledDeck.size()+" карт осталось в колоде");
-    }
-
-    void extractRiver(){
-        Card card = Deck.extractCard();
-        //System.out.println(filePathCard+card.SUIT+"/"+card.rate+".jpg");
-        File fileCard = new File(filePathCard+card.SUIT+"/"+card.rate+".jpg");
-        river.setImage(new Image(fileCard.toURI().toString()));
-        System.out.println(Deck.shuffledDeck.size()+" карт осталось в колоде");
-    }
-
 
    public void makeStake(){
         // Adding Listener to value property.
@@ -200,11 +197,22 @@ public class Game {
                     myStakeLabel.setText(String.valueOf(Math.round(newValue.doubleValue())));
                     iStake = Integer.parseInt(myStakeLabel.getText());
                     //System.out.println(iStake+" value from slider");
+                    if(iStake<Player.maxBid){
+                        applyButton.setDisable(true);
+                    }
+                    else applyButton.setDisable(false);
                 }
             });
-
-
     }
+
+    public static void vSetAccount(int acc){
+        Platform.runLater(()->accountScore.setText(String.valueOf(acc)));
+    }
+
+    public static void vSetBank(int value){
+        Platform.runLater(()->bankLabel.setText(String.valueOf(value)));
+    }
+
 
 
 

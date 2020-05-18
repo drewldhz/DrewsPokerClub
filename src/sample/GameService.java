@@ -1,12 +1,15 @@
 package sample;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 public class GameService extends  Thread{
     private static final int PORT = 10000;
@@ -17,6 +20,7 @@ public class GameService extends  Thread{
     public static int counter = 0;
     private int iCountPlayers = 1;
     public LinkedList<Socket> socketList;
+
 
 
     public GameService() {
@@ -37,16 +41,18 @@ public class GameService extends  Thread{
                     //System.out.println("Ждем остальных игроков...");
                     Game.chat.appendText("Подключено "+ socketList.size()+"\n");
                     Game.chat.appendText("Ждем остальных игроков..."+"\n");
+
                 }
                 //System.out.println("Все игроки подключены , количество игроков "+socketList.size());
                 Game.chat.appendText("Все игроки подключены , количество игроков "+socketList.size()+"\n");
                 try {
-                    Thread.sleep(5000);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
                 System.out.println("Понеслась");
-                //vDealTheCards(socketList,2);
+               //System.out.println(mapPlayers.size());
+
                try {
                     new HoldemPoker(socketList);
                 } catch (ClassNotFoundException e) {
@@ -98,5 +104,12 @@ public class GameService extends  Thread{
             });
             iCountCards++;
         }
+    }
+    public Object receiveMessage(Socket player) throws IOException, ClassNotFoundException
+    {
+        //socket is a variable get from Player class socket = new Socket("severHost", PORT);
+        ObjectInputStream messageFromServer = new ObjectInputStream(player.getInputStream());
+        Object object = messageFromServer.readObject();
+        return object;
     }
 }
