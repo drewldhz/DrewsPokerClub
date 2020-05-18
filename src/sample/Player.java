@@ -154,7 +154,7 @@ public class Player extends Thread{
                 account=account-Game.iStake;
 
                 System.out.println(acc+" account status");
-     
+
 
                 Game.chat.appendText(bidResponse+"\n");
                 makeStake(bidResponse);
