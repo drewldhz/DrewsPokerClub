@@ -81,6 +81,8 @@ public class Game {
     @FXML
     private Label myStakeLabel;
 
+    public static Label stakeLabel;
+
     String filePathCard = "C:/ShitCode/firstUI/src/assets/Deck/";
 
     public static int iStake = 0;
@@ -114,6 +116,8 @@ public class Game {
         stakeSpin = stakeSpinner;
         bankLabel = bankScore;
         chat = chatArea;
+        stakeLabel = myStakeLabel;
+
         //chatArea.setText("Hello");
         f1 = firstFlop;
         f2 = secondFlop;
@@ -129,7 +133,7 @@ public class Game {
         makeStake();
 
         applyButton.setOnMouseClicked(e->{
-            /*if(stakeSpinner.getValue()>=Player.maxBid)*/bReadyStake = true;
+            if(stakeSpinner.getValue()>=stakeSpinner.getMin())bReadyStake = true;
         });
 
         fauldButton.setOnMouseClicked(e->{
@@ -196,11 +200,6 @@ public class Game {
                 public void changed(ObservableValue<? extends Number> changed, Number oldValue, Number newValue){
                     myStakeLabel.setText(String.valueOf(Math.round(newValue.doubleValue())));
                     iStake = Integer.parseInt(myStakeLabel.getText());
-                    //System.out.println(iStake+" value from slider");
-                    //if(iStake<Player.maxBid){
-                    //    applyButton.setDisable(true);
-                    //}
-                    //else applyButton.setDisable(false);
                     if(iStake==stakeSpinner.getMin()){
                         applyButton.setText("Call");
                     }
@@ -219,6 +218,9 @@ public class Game {
         Platform.runLater(()->bankLabel.setText(String.valueOf(value)));
     }
 
+    public static void vSetSpinLabel( int value){
+        Platform.runLater(()->stakeLabel.setText(String.valueOf(value)));
+    }
 
 
 

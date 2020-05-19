@@ -2,7 +2,7 @@ package sample;
 
 import java.io.Serializable;
 
-public class Stakes implements Serializable {
+public class RoundStakes implements Serializable {
     private int rate = 0;
     private String playerName = "";
     private int previousBid = 0;
@@ -10,7 +10,7 @@ public class Stakes implements Serializable {
     public int bank = 0;
     public boolean raisedPlayer = false;
 
-    public Stakes(int rate, String playerName){
+    public RoundStakes(int rate, String playerName){
         this.rate = rate;
         this.playerName = playerName;
     }

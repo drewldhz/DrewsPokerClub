@@ -1,7 +1,5 @@
 package sample;
 
-import org.w3c.dom.ls.LSOutput;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -23,7 +21,7 @@ public class HoldemPoker {
     private int bank = 0;
     public static int maxBid = 0;
     public Socket raisedPlayerSocket = null;
-    public Stakes stake;
+    public RoundStakes stake;
     public HoldemPoker(LinkedList<Socket> playerHands) throws IOException, ClassNotFoundException {
         String actualMessage = "";
         while (gameState){
@@ -178,8 +176,7 @@ public class HoldemPoker {
 
     public void vRequestBidding(LinkedList<Socket> players) throws IOException, ClassNotFoundException {
         System.out.println("Функция запроса ставок :");
-        int bid = 0;
-        Stakes myBid = null;
+        RoundStakes myBid = null;
         biddingEnd = false;
         while (!biddingEnd){
             for(Socket player: players){
@@ -191,49 +188,33 @@ public class HoldemPoker {
                     prepareNewRoundOfBidding(players);
                     break;
                 }
-                stake = new Stakes(maxBid,"");
+                stake = new RoundStakes(maxBid,"");
                 stake.bank = bank;
                 sendMessage(player, stake);
-                myBid = (Stakes) receiveMessage(player);
+                myBid = (RoundStakes) receiveMessage(player);
                 if(myBid.raisedPlayer)raisedPlayerSocket = player;
-                bid = myBid.getRate();
-                if(bid>maxBid)maxBid=bid;
-                else if(bid<0){
+                if(myBid.getRate()>maxBid)maxBid=myBid.getRate();
+                else if(myBid.getRate()<0){
                     fauldPlayers.add(player);
                     System.out.println("fauld");
                     continue;
                 }
-                bank+=bid;
+                else if(myBid.getRate()==maxBid)Game.chat.setText(myBid.getPlayerName() + "уравнивает ставку"+"\n");
+                bank+=myBid.getRate();
             }
-            bidding = true;
+            if(maxBid==0){
+                biddingEnd = true;
+                bidding = true;
+                prepareNewRoundOfBidding(players);
+                break;
+            }
+            //if(players.size()-fauldPlayers.size()==1||players.size()-fauldPlayers.size()==0){
+            // //объявить начало новой игры
+            //}
         }
-     //   for(Socket player: players){
-     //       //Здесь лучше работать с объектом Stakes
-     //       //sendMessage(player, "your bid mr.");
-     //       if(!fauldPlayers.isEmpty() && fauldPlayers.contains(player)){
-     //           System.out.println("игрок уже сбросил карты");
-     //           continue;
-     //       }
-     //       sendMessage(player, new Stakes(maxBid,""));
-     //       myBid = (Stakes) receiveMessage(player);
-     //       bid = myBid.getRate();
-     //       if(bid>maxBid){
-     //           maxBid=bid;
-     //       }
-     //       else if(bid<0){
-     //           fauldPlayers.add(player);
-     //           System.out.println("fauld");
-     //           continue;
-     //       }
-     //       System.out.println(bid+ " ставка от игрока "+myBid.getPlayerName());
-     //       bank+=bid;
-     //   }
-     //   bidding = true;
-     //   System.out.println(bank+ " очков в банке");
-     //   System.out.println("Ставки приняты...");
     }
 
-    public int vBidding(Stakes myBid, int max){
+    public int vBidding(RoundStakes myBid, int max){
         boolean nextRound = false;
         int maxBid = max;
         String wordFromPlayer = "";

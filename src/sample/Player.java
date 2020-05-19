@@ -1,12 +1,6 @@
 package sample;
 
-import com.sun.management.GarbageCollectionNotificationInfo;
-import javafx.application.Platform;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,15 +9,14 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class Player extends Thread{
     public static int iHandSize = 2;
     public ArrayList<Card> hand = new ArrayList<>(iHandSize);
     public ArrayList<Card> cardsOnTable = new ArrayList<>(5);
     private String name;
-    private int account = 10000;
-    volatile public static int acc = 10000;
+    private int account = 10;
+    volatile public static int acc = 10;
     //To do: make enum
     private final String requestBid = "your bid mr.";
     private final String requestFlop = "open flop";
@@ -31,7 +24,7 @@ public class Player extends Thread{
     private final String requestRiver = "open river";
     String filePathCard = "D:/firstUI/src/assets/Deck/";
     Socket socket;
-    Stakes myBid = new Stakes(0, name);
+    RoundStakes myBid = new RoundStakes(0, name);
     public static int maxBid = 0;
     public int callBid = 0;
     public int bid = 0;
@@ -138,32 +131,37 @@ public class Player extends Thread{
                 }
             }
             //Request Bid
-            if(receivedMessage!=null && receivedMessage instanceof Stakes/* && receivedMessage.equals(requestBid)*/){
+            if(receivedMessage!=null && receivedMessage instanceof RoundStakes/* && receivedMessage.equals(requestBid)*/){
+                System.out.println("функция ставок");
+                RoundStakes roundStakes = (RoundStakes)receivedMessage;
 
-                Stakes stakes = (Stakes)receivedMessage;
-
-                maxBid = stakes.getRate();
-                bankScore = stakes.bank;
+                maxBid = roundStakes.getRate();
+                bankScore = roundStakes.bank;
                 Game.vSetBank(bankScore);
                 callBid = maxBid-bid;
                 Game.stakeSpin.setMin(callBid);
                 Game.chat.appendText(requestBid+" "+name+" ?"+"\n");
                 while(true){
-                    System.out.println(Game.bReadyStake);
-                    if(Game.bReadyStake&&Game.iStake>=maxBid) {
-                        System.out.println("Ставка сделана");
+                    System.out.println(Game.bReadyStake+" ! ");
+                    if(Game.bReadyStake&&Game.iStake>=callBid) {
+                        System.out.println(Game.iStake+" Ставка сделана");
+                        break;
+                    }else if(Game.bReadyStake&&Game.iStake<0){
+                        System.out.println(Game.iStake+" fauld");
                         break;
                     }
                 }
                 Integer bidResponse = Game.iStake;
-                if(Game.stakeSpin.getMin()==bidResponse){
-                    bid += bidResponse;
-                }
-                else bid = bidResponse;
+                //if(Game.stakeSpin.getMin()==bidResponse){
+                //    bid += bidResponse;
+                //    Game.chat
+                //}
+                //else bid = bidResponse;
+                bid += bidResponse;
                 account=account-Game.iStake;
 
 
-                Game.chat.appendText(bidResponse+"\n");
+                Game.chat.appendText(bid+"\n");
                 makeStake(bid);//bidResponse
                 Game.bReadyStake = false;
             }
@@ -228,11 +226,13 @@ public class Player extends Thread{
     }
 
     public void makeStake(int rate){
+        myBid.raisedPlayer = false;
         myBid.setRate(rate);
         myBid.setAccountPlayer(account);
         if(rate>maxBid)myBid.raisedPlayer = true;//To do: make setter
         Game.vSetBank(bankScore+rate);
         //System.out.println(name+" делает ставку "+myBid.getRate());
+        Game.chat.setText(name+" делает ставку "+myBid.getRate());
         try {
             SendResponseToGameService(myBid);
             Game.vSetAccount(account);
