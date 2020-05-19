@@ -188,7 +188,7 @@ public class HoldemPoker {
                     Game.chat.setText("необходимо заканчивать торги");
                     biddingEnd = true;
                     bidding = true;
-                    prepareNewRoundOfBidding();
+                    prepareNewRoundOfBidding(players);
                     break;
                 }
                 stake = new Stakes(maxBid,"");
@@ -205,7 +205,7 @@ public class HoldemPoker {
                 }
                 bank+=bid;
             }
-            //bidding = true;
+            bidding = true;
         }
      //   for(Socket player: players){
      //       //Здесь лучше работать с объектом Stakes
@@ -257,13 +257,21 @@ public class HoldemPoker {
         return maxBid;
     }
 
-    void prepareNewRoundOfBidding(){
+    void prepareNewRoundOfBidding(LinkedList<Socket> players){
         Game.chat.setText("подготовка к раздаче карт");
         biddingEnd = true;
         raisedPlayerSocket = null;
         maxBid = 0;
         bank = 0;
         fauldPlayers.clear();
+        GameInfo gameInfo = new GameInfo();
+        for(Socket player: players){
+            try {
+                sendMessage(player,gameInfo);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
     }
 }

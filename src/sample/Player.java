@@ -139,11 +139,9 @@ public class Player extends Thread{
             }
             //Request Bid
             if(receivedMessage!=null && receivedMessage instanceof Stakes/* && receivedMessage.equals(requestBid)*/){
-                //System.out.println(name +" "+ receivedMessage);
-                //System.out.println(requestBid+" "+name);
+
                 Stakes stakes = (Stakes)receivedMessage;
-                //maxBid = ((Stakes) receivedMessage).getRate();
-                //Game.vSetBank(stakes.bank);
+
                 maxBid = stakes.getRate();
                 bankScore = stakes.bank;
                 Game.vSetBank(bankScore);
@@ -158,25 +156,31 @@ public class Player extends Thread{
                     }
                 }
                 Integer bidResponse = Game.iStake;
+                if(Game.stakeSpin.getMin()==bidResponse){
+                    bid += bidResponse;
+                }
+                else bid = bidResponse;
                 account=account-Game.iStake;
-                bid = bidResponse;
-
-                //Game.stakeSpin.setMin(callBid);
-                System.out.println(acc+" account status");
 
 
                 Game.chat.appendText(bidResponse+"\n");
-                makeStake(bidResponse);
+                makeStake(bid);//bidResponse
                 Game.bReadyStake = false;
             }
 
-            //}
-            if(HoldemPoker.biddingEnd){
+
+            //Receive Game information
+            if(receivedMessage!=null && receivedMessage instanceof GameInfo){
+                System.out.println("RESET");
                 maxBid = 0;
                 callBid = 0;
                 bid = 0;
                 bankScore = 0;
+                Game.vSetBank(0);
+                Game.stakeSpin.setMin(0);
+
             }
+
             System.out.println(name+ " ждет дальнейших действий...");
         }
 
