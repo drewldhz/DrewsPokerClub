@@ -188,6 +188,7 @@ public class HoldemPoker {
                     prepareNewRoundOfBidding(players);
                     break;
                 }
+                //
                 stake = new RoundStakes(maxBid,"");
                 stake.bank = bank;
                 sendMessage(player, stake);
