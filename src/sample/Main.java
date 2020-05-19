@@ -19,20 +19,8 @@ public class Main extends Application implements EventHandler<ActionEvent> {
     double dY;
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Circle circle = new Circle(10,10, 150, Color.YELLOW);
-        circle.setOnMousePressed(e->{
-            dX = circle.getTranslateX()-e.getSceneX();
-            dY= circle.getTranslateY()-e.getSceneY();
-        });
-        circle.setOnMouseDragged(e->{
-            circle.setTranslateX(dX+e.getSceneX());
-            circle.setTranslateY(dY+e.getSceneY());
-        });
         Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
         primaryStage.setTitle("Holdem Poker");
-        Pane r = new Pane();
-        r.getChildren().add(circle);
-
 
         primaryStage.setScene(new Scene(root, 700, 400));
         primaryStage.show();

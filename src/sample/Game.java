@@ -129,7 +129,7 @@ public class Game {
         makeStake();
 
         applyButton.setOnMouseClicked(e->{
-            if(stakeSpinner.getValue()>=Player.maxBid)bReadyStake = true;
+            /*if(stakeSpinner.getValue()>=Player.maxBid)*/bReadyStake = true;
         });
 
         fauldButton.setOnMouseClicked(e->{
@@ -197,10 +197,16 @@ public class Game {
                     myStakeLabel.setText(String.valueOf(Math.round(newValue.doubleValue())));
                     iStake = Integer.parseInt(myStakeLabel.getText());
                     //System.out.println(iStake+" value from slider");
-                    if(iStake<Player.maxBid){
-                        applyButton.setDisable(true);
+                    //if(iStake<Player.maxBid){
+                    //    applyButton.setDisable(true);
+                    //}
+                    //else applyButton.setDisable(false);
+                    if(iStake==stakeSpinner.getMin()){
+                        applyButton.setText("Call");
                     }
-                    else applyButton.setDisable(false);
+                    else  if(iStake>stakeSpinner.getMin()){
+                        applyButton.setText("raise");
+                    }
                 }
             });
     }

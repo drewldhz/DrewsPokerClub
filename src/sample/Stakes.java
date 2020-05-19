@@ -8,6 +8,7 @@ public class Stakes implements Serializable {
     private int previousBid = 0;
     private int accountPlayer;
     public int bank = 0;
+    public boolean raisedPlayer = false;
 
     public Stakes(int rate, String playerName){
         this.rate = rate;

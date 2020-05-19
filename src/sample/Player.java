@@ -33,6 +33,10 @@ public class Player extends Thread{
     Socket socket;
     Stakes myBid = new Stakes(0, name);
     public static int maxBid = 0;
+    public int callBid = 0;
+    public int bid = 0;
+    public int bankScore = 0;
+
 
     public static int counter = 0;
 
@@ -141,7 +145,10 @@ public class Player extends Thread{
                 //maxBid = ((Stakes) receivedMessage).getRate();
                 //Game.vSetBank(stakes.bank);
                 maxBid = stakes.getRate();
-                //Game.stakeSpin.setMin(maxBid);
+                bankScore = stakes.bank;
+                Game.vSetBank(bankScore);
+                callBid = maxBid-bid;
+                Game.stakeSpin.setMin(callBid);
                 Game.chat.appendText(requestBid+" "+name+" ?"+"\n");
                 while(true){
                     System.out.println(Game.bReadyStake);
@@ -152,17 +159,24 @@ public class Player extends Thread{
                 }
                 Integer bidResponse = Game.iStake;
                 account=account-Game.iStake;
+                bid = bidResponse;
 
+                //Game.stakeSpin.setMin(callBid);
                 System.out.println(acc+" account status");
 
 
                 Game.chat.appendText(bidResponse+"\n");
                 makeStake(bidResponse);
                 Game.bReadyStake = false;
-
             }
 
             //}
+            if(HoldemPoker.biddingEnd){
+                maxBid = 0;
+                callBid = 0;
+                bid = 0;
+                bankScore = 0;
+            }
             System.out.println(name+ " ждет дальнейших действий...");
         }
 
@@ -212,7 +226,8 @@ public class Player extends Thread{
     public void makeStake(int rate){
         myBid.setRate(rate);
         myBid.setAccountPlayer(account);
-        Game.vSetBank(account);
+        if(rate>maxBid)myBid.raisedPlayer = true;//To do: make setter
+        Game.vSetBank(bankScore+rate);
         //System.out.println(name+" делает ставку "+myBid.getRate());
         try {
             SendResponseToGameService(myBid);
