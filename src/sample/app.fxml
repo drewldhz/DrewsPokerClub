@@ -104,12 +104,12 @@
                   <Font size="20.0" />
                </font>
             </Label>
-            <Label layoutX="379.0" layoutY="116.0" text="Bank" textFill="#6dab10">
+            <Label layoutX="379.0" layoutY="116.0" text="Round score" textFill="#6dab10">
                <font>
                   <Font name="Arial Black" size="28.0" />
                </font>
             </Label>
-            <Label fx:id="bankScore" layoutX="518.0" layoutY="116.0" text="0" textFill="#3cddd8">
+            <Label fx:id="bankScore" layoutX="641.0" layoutY="116.0" text="0" textFill="#3cddd8">
                <font>
                   <Font name="Arial Black" size="28.0" />
                </font>

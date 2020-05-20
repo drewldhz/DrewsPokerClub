@@ -14,7 +14,7 @@ public class Deck implements Externalizable {
 
     //Генерация колоды карт
     public static void generateDeck(){
-        rates.addAll(Arrays.asList("2","3","4","5","6","7","8","9","10","J","Q","K","T"));//0-12
+        rates.addAll(Arrays.asList("2","3","4","5","6","7","8","9","10","11","12","13","14"));//0-12
         for(int i=0; i<rates.size(); i++){
             cards.add(new Clubs(rates.get(i)));
             cards.add(new Hearts(rates.get(i)));

@@ -13,6 +13,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
+
 public class Main extends Application implements EventHandler<ActionEvent> {
     Button button;
     double dX;
@@ -28,7 +30,15 @@ public class Main extends Application implements EventHandler<ActionEvent> {
 
 
     public static void main(String[] args) {
-        launch(args);
+        //launch(args);
+        CheckCombinations checkCombinations = new CheckCombinations();
+        ArrayList<Card> cards = new ArrayList<>();
+        cards.add(new Clubs("3"));
+        cards.add(new Hearts("3"));
+        cards.add(new Spades("3"));
+        cards.add(new Clubs("4"));
+        cards.add(new Diamonds("4"));
+        checkCombinations.checkSequence(cards);
     }
 
     @Override

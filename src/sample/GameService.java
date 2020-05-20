@@ -18,7 +18,7 @@ public class GameService extends  Thread{
     public static LinkedList<Player> playersList = new LinkedList<>(); // список всех игроков
     Socket playerSocket;
     public static int counter = 0;
-    private int iCountPlayers = 2;
+    private int iCountPlayers = 1;
     public LinkedList<Socket> socketList;
 
 

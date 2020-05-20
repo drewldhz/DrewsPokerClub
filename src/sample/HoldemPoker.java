@@ -22,6 +22,7 @@ public class HoldemPoker {
     public static int maxBid = 0;
     public Socket raisedPlayerSocket = null;
     public RoundStakes stake;
+    public boolean roundEnd = false;
     public HoldemPoker(LinkedList<Socket> playerHands) throws IOException, ClassNotFoundException {
         String actualMessage = "";
         while (gameState){
@@ -212,6 +213,12 @@ public class HoldemPoker {
             //if(players.size()-fauldPlayers.size()==1||players.size()-fauldPlayers.size()==0){
             // //объявить начало новой игры
             //}
+        }
+        if(riverOpened){
+            roundEnd=true;
+            for(Socket player: players){
+                sendMessage(player, new CheckCombinations());
+            }
         }
     }
 

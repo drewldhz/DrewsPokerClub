@@ -8,7 +8,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 public class Player extends Thread{
     public static int iHandSize = 2;
@@ -22,7 +24,7 @@ public class Player extends Thread{
     private final String requestFlop = "open flop";
     private final String requestTurn = "open turn";
     private final String requestRiver = "open river";
-    String filePathCard = "D:/firstUI/src/assets/Deck/";
+    String filePathCard = "C:/ShitCode/DrewsPokerClub/src/assets/Deck/";
     Socket socket;
     RoundStakes myBid = new RoundStakes(0, name);
     public static int maxBid = 0;
@@ -76,6 +78,7 @@ public class Player extends Thread{
                     Game.chat.appendText(name + " принял карту : " + vCheckInstance(card)+"\n");
                     File fileCard = new File(filePathCard + card.SUIT + "/" + card.rate + ".jpg");
                     if (iCountCards == 0) Game.c1.setImage(new Image(fileCard.toURI().toString()));
+                    System.out.println(filePathCard + card.SUIT + "/" + card.rate + ".jpg");
                     if (iCountCards == 1) Game.c2.setImage(new Image(fileCard.toURI().toString()));
                     iCountCards++;
                     if(iCountCards>1) iCountCards = 0;
@@ -122,10 +125,12 @@ public class Player extends Thread{
                 try {
                     Card card = receiveCard();
                     File fileCard = new File(filePathCard + card.SUIT + "/" + card.rate + ".jpg");
+                    System.out.println(filePathCard + card.SUIT + "/" + card.rate + ".jpg");
                     cardsOnTable.add(card);
                     Game.chat.appendText("карта на river : " + vCheckInstance(card)+"\n");
                     System.out.println(name + " увидел карту на river : " + vCheckInstance(card) + ", карт на столе " + cardsOnTable.size());
                     if (cardsOnTable.size() == 5) Game.r1.setImage(new Image(fileCard.toURI().toString()));
+
                 } catch (IOException | ClassNotFoundException ex) {
                     ex.printStackTrace();
                 }
@@ -177,6 +182,13 @@ public class Player extends Thread{
                 Game.vSetBank(0);
                 Game.stakeSpin.setMin(0);
 
+            }
+
+            if(receivedMessage!=null && receivedMessage instanceof CheckCombinations){
+                CheckCombinations check = new CheckCombinations();
+                check.cardsOnTable = cardsOnTable;
+                check.hand = hand;
+                check.checkSequence(cardsOnTable);
             }
 
             System.out.println(name+ " ждет дальнейших действий...");
