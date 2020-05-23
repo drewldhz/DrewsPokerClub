@@ -186,9 +186,9 @@ public class Player extends Thread{
 
             if(receivedMessage!=null && receivedMessage instanceof CheckCombinations){
                 CheckCombinations check = new CheckCombinations();
-                check.cardsOnTable = cardsOnTable;
-                check.hand = hand;
-                check.checkSequence(cardsOnTable);
+                hand.addAll(cardsOnTable);
+                check.checkSeq(hand);
+                //Game.vAnimateValidation(hand);
             }
 
             System.out.println(name+ " ждет дальнейших действий...");

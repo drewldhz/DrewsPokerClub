@@ -83,7 +83,7 @@ public class Game {
 
     public static Label stakeLabel;
 
-    String filePathCard = "C:/ShitCode/firstUI/src/assets/Deck/";
+    static String filePathCard = "C:/ShitCode/firstUI/src/assets/Deck/";
 
     public static int iStake = 0;
 
@@ -110,8 +110,18 @@ public class Game {
 
     public static ImageView c2;
 
+    static ArrayList<ImageView> imageViews = new ArrayList<>();
+
     @FXML
     void initialize() {
+        imageViews.add(f1);
+        imageViews.add(f2);
+        imageViews.add(f3);
+        imageViews.add(c1);
+        imageViews.add(c2);
+        imageViews.add(t1);
+        imageViews.add(r1);
+
         accountScore = accountLabel;
         stakeSpin = stakeSpinner;
         bankLabel = bankScore;
@@ -222,6 +232,24 @@ public class Game {
         Platform.runLater(()->stakeLabel.setText(String.valueOf(value)));
     }
 
+    public static void vAnimateValidation(ArrayList<Card> cards){
+        for (Card card: cards){
+            Image img = new Image(filePathCard+card.SUIT+"/"+card.rate+".jpg");
+            for(ImageView imageView: imageViews){
+                if(imageView.getImage().equals(img)){
+                    System.out.println("IMG");
+                    FadeTransition ft = new FadeTransition();
+                    ft.setNode(imageView);
+                    ft.setDuration(Duration.millis(2000));
+                    ft.setFromValue(1.0);
+                    ft.setToValue(0.0);
+                    ft.setCycleCount(2);
+                    ft.setAutoReverse(true);
+                    ft.play();
+                }
+            }
+        }
+    }
 
 
 }

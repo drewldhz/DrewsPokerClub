@@ -15,10 +15,8 @@ import javafx.stage.Stage;
 
 import java.util.ArrayList;
 
-public class Main extends Application implements EventHandler<ActionEvent> {
-    Button button;
-    double dX;
-    double dY;
+public class Main extends Application  {
+   
     @Override
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
@@ -30,21 +28,22 @@ public class Main extends Application implements EventHandler<ActionEvent> {
 
 
     public static void main(String[] args) {
-        //launch(args);
-        CheckCombinations checkCombinations = new CheckCombinations();
-        ArrayList<Card> cards = new ArrayList<>();
-        cards.add(new Clubs("3"));
-        cards.add(new Hearts("3"));
-        cards.add(new Spades("3"));
-        cards.add(new Clubs("4"));
-        cards.add(new Diamonds("4"));
-        checkCombinations.checkSequence(cards);
+        launch(args);
+        //CheckCombinations checkCombinations = new CheckCombinations();
+        //ArrayList<Card> cards = new ArrayList<>();
+        //ArrayList<Card> hands = new ArrayList<>();
+        //cards.add(new Hearts("10"));
+        //cards.add(new Diamonds("10"));
+        //cards.add(new Spades("10"));
+        //cards.add(new Clubs("10"));
+        //cards.add(new Hearts("13"));
+        //hands.add(new Hearts("14"));
+        //hands.add(new Hearts("7"));
+        ////checkCombinations.checkSequence(cards);
+        //hands.addAll(cards);
+        //checkCombinations.checkSeq(hands);
+
     }
 
-    @Override
-    public void handle(ActionEvent actionEvent) {
-        if(actionEvent.getSource()==button){
-            System.out.println("start code");
-        }
-    }
+
 }
