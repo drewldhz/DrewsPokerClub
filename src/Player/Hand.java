@@ -1,4 +1,7 @@
-package sample;
+package Player;
+
+import Deck.Card;
+
 
 import java.util.ArrayList;
 

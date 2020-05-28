@@ -1,4 +1,7 @@
-package sample;
+package GameService;
+
+import Deck.Card;
+import Player.Player;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -6,10 +9,7 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
 public class GameService extends  Thread{
     private static final int PORT = 10000;
@@ -50,8 +50,8 @@ public class GameService extends  Thread{
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                System.out.println("Понеслась");
-               //System.out.println(mapPlayers.size());
+                //System.out.println("Понеслась");
+                Game.chat.appendText("Round "+" started+\n");
 
                try {
                     new HoldemPoker(socketList);
@@ -72,41 +72,15 @@ public class GameService extends  Thread{
 
     }
 
-        public void sendMessage(Socket socket, Card card) throws IOException
-        {
-            ObjectOutputStream testToClient = new ObjectOutputStream(socket.getOutputStream());
-            testToClient.writeObject(card);
-            testToClient.flush();
-            testToClient.close();
-        }
-
-    public void vCheckInstance (Card card){
-        if (card instanceof Clubs) {
-            System.out.println(((Clubs) card).getRate() + " " + ((Clubs) card).getSUIT());
-        } else if (card instanceof Hearts) {
-            System.out.println(((Hearts) card).getRate() + " " + ((Hearts) card).getSUIT());
-        } else if (card instanceof Diamonds) {
-            System.out.println(((Diamonds) card).getRate() + " " + ((Diamonds) card).getSUIT());
-        } else if (card instanceof Spades) {
-            System.out.println(((Spades) card).getRate() + " " + ((Spades) card).getSUIT());
-        }
+    public void sendMessage(Socket socket, Card card) throws IOException {
+        ObjectOutputStream testToClient = new ObjectOutputStream(socket.getOutputStream());
+        testToClient.writeObject(card);
+        testToClient.flush();
+        testToClient.close();
     }
 
-    public void vDealTheCards(ArrayList<Socket> playerHands, int handSize) throws IOException {
-        int iCountCards = 0;
-        while (iCountCards<handSize) {
-            playerHands.forEach(player-> {
-                try {
-                    sendMessage(player,Deck.extractCard());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
-            iCountCards++;
-        }
-    }
-    public Object receiveMessage(Socket player) throws IOException, ClassNotFoundException
-    {
+
+    public Object receiveMessage(Socket player) throws IOException, ClassNotFoundException {
         //socket is a variable get from Player class socket = new Socket("severHost", PORT);
         ObjectInputStream messageFromServer = new ObjectInputStream(player.getInputStream());
         Object object = messageFromServer.readObject();

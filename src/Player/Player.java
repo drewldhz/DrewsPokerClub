@@ -1,6 +1,9 @@
-package sample;
+package Player;
 
+import Deck.*;
 import javafx.scene.image.Image;
+import GameService.Game;
+import GameService.GameInfo;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,9 +11,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.sql.SQLOutput;
 import java.util.ArrayList;
-import java.util.Comparator;
 
 public class Player extends Thread{
     public static int iHandSize = 2;
@@ -35,7 +36,7 @@ public class Player extends Thread{
 
     public static int counter = 0;
 
-    Player(String name) throws IOException
+    public Player(String name) throws IOException
     {
         vSetName(name);
         Game.stakeSpin.setMax(account);
@@ -55,7 +56,6 @@ public class Player extends Thread{
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //System.out.println(socket+" "+ this.name);
         int iCountCards = 0;
         while (true){
             Game.vSetAccount(account);
@@ -97,7 +97,7 @@ public class Player extends Thread{
                     File fileCard = new File(filePathCard + card.SUIT + "/" + card.rate + ".jpg");
                     cardsOnTable.add(card);
                     Game.chat.appendText("карта на flop : " + vCheckInstance(card)+"\n");
-                    System.out.println(name + " увидел карту на флопе : " + vCheckInstance(card) + ", карт на столе " + cardsOnTable.size());
+                    //System.out.println(name + " увидел карту на флопе : " + vCheckInstance(card) + ", карт на столе " + cardsOnTable.size());
                     if (cardsOnTable.size() == 1) Game.f1.setImage(new Image(fileCard.toURI().toString()));
                     if (cardsOnTable.size() == 2) Game.f2.setImage(new Image(fileCard.toURI().toString()));
                     if (cardsOnTable.size() == 3) Game.f3.setImage(new Image(fileCard.toURI().toString()));
@@ -113,7 +113,7 @@ public class Player extends Thread{
                     File fileCard = new File(filePathCard + card.SUIT + "/" + card.rate + ".jpg");
                     cardsOnTable.add(card);
                     Game.chat.appendText("карта на turn : " + vCheckInstance(card)+"\n");
-                    System.out.println(name + " увидел карту на turn : " + vCheckInstance(card) + ", карт на столе " + cardsOnTable.size());
+                    //System.out.println(name + " увидел карту на turn : " + vCheckInstance(card) + ", карт на столе " + cardsOnTable.size());
                     if (cardsOnTable.size() == 4) Game.t1.setImage(new Image(fileCard.toURI().toString()));
                 } catch (IOException | ClassNotFoundException ex) {
                     ex.printStackTrace();
@@ -125,10 +125,9 @@ public class Player extends Thread{
                 try {
                     Card card = receiveCard();
                     File fileCard = new File(filePathCard + card.SUIT + "/" + card.rate + ".jpg");
-                    System.out.println(filePathCard + card.SUIT + "/" + card.rate + ".jpg");
                     cardsOnTable.add(card);
                     Game.chat.appendText("карта на river : " + vCheckInstance(card)+"\n");
-                    System.out.println(name + " увидел карту на river : " + vCheckInstance(card) + ", карт на столе " + cardsOnTable.size());
+                    //System.out.println(name + " увидел карту на river : " + vCheckInstance(card) + ", карт на столе " + cardsOnTable.size());
                     if (cardsOnTable.size() == 5) Game.r1.setImage(new Image(fileCard.toURI().toString()));
 
                 } catch (IOException | ClassNotFoundException ex) {
@@ -187,8 +186,9 @@ public class Player extends Thread{
             if(receivedMessage!=null && receivedMessage instanceof CheckCombinations){
                 CheckCombinations check = new CheckCombinations();
                 hand.addAll(cardsOnTable);
-                check.checkSeq(hand);
-                //Game.vAnimateValidation(hand);
+                int iPower = check.checkSeq(hand);
+                System.out.println("Power is "+iPower);
+                //SendResponseToGameService(Integer.valueOf(iPower));
             }
 
             System.out.println(name+ " ждет дальнейших действий...");

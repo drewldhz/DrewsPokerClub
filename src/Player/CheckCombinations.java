@@ -1,22 +1,42 @@
-package sample;
+package Player;
+
+import Deck.Card;
+import GameService.Game;
+
 
 import java.io.Serializable;
 import java.util.*;
 
 
 public class CheckCombinations implements Serializable {
-    public ArrayList<Card> hand;
-    public ArrayList<Card> cardsOnTable;
-
-    public boolean kicker =false;
-    public boolean pair = false;
-    public boolean set = false;
-    public boolean quads = false;
-    public boolean flush = false;
-    public ArrayList <Card> combination;
-
-    public void checkSeq(ArrayList<Card> cards) {
-        //cards.forEach(card -> System.out.println(card.rate));
+    private boolean kicker =false;
+    private boolean pair = false;
+    private boolean set = false;
+    private boolean quads = false;
+    private boolean fullHouse = false;
+    private boolean flush = false;
+    private ArrayList <Card> combination;
+    private int combinationPower = 0;
+    private Map<String, Integer> mapCombinationsPower;
+    //checkSeq должен возвращать силу собранной комбинации в int
+    public CheckCombinations(){
+        initializeCombinationsPower();
+    }
+    public void initializeCombinationsPower(){
+        mapCombinationsPower = new HashMap<>();
+        mapCombinationsPower.put("KICKER", 1);
+        mapCombinationsPower.put("PAIR",2);
+        mapCombinationsPower.put("TWO PAIRS",3);
+        mapCombinationsPower.put("SET",4);
+        mapCombinationsPower.put("STRAIGHT",5);
+        mapCombinationsPower.put("FLUSH",6);
+        mapCombinationsPower.put("FULL HOUSE", 7);
+        mapCombinationsPower.put("FOUR OF KIND", 8);
+        mapCombinationsPower.put("STRAIGHT FLUSH",9);
+        mapCombinationsPower.put("ROYAL FLUSH",10);
+    }
+    //Добавить проверку на STRAIGHT
+    public int checkSeq(ArrayList<Card> cards) {
         combination = new ArrayList<>();
         cards.sort(Comparator.comparing(o -> Integer.parseInt(o.rate)));
         Map<Card, Integer> cardMap = new HashMap<Card, Integer>();
@@ -29,7 +49,6 @@ public class CheckCombinations implements Serializable {
             if (countSameSuit > 4) {
                 flush = true;
                 combination.add(card);
-                //System.out.println("FLUSH OF ");
             }
         }
         //если не flush
@@ -43,6 +62,7 @@ public class CheckCombinations implements Serializable {
                     set = true;
                     combination.add(card);
                     System.out.println("SET OF " + card.rate + " " + card.SUIT);
+                    combinationPower = mapCombinationsPower.get("SET");
                 } else if (integer > 1) {
                     pair = true;
                     combination.add(card);
@@ -52,16 +72,23 @@ public class CheckCombinations implements Serializable {
             System.out.println("----------------------------------------------------------------------------");
             if (quads) {
                 System.out.println("FOUR OF KIND ");
+                combinationPower = mapCombinationsPower.get("FOUR OF KIND");
             } else if (set && pair) {
                 System.out.println("FULL HOUSE COMBINATION :");
+                combinationPower = mapCombinationsPower.get("FULL HOUSE");
             } else if (pair) {
                 if (combination.size() > 2) {
+                    combinationPower = mapCombinationsPower.get("TWO PAIRS");
                     System.out.println("TWO PAIRS COMBINATION :");
-                } else System.out.println("PAIR COMBINATION :");
+                } else{
+                    combinationPower = mapCombinationsPower.get("PAIR");
+                    System.out.println("PAIR COMBINATION :");
+                }
 
             } else if (countRate == 1) {
                 kicker = true;
                 combination.add(cards.get(cards.size() - 1));
+                combinationPower = mapCombinationsPower.get("KICKER");
                 System.out.println("JUST KICKER :");
             }
         }
@@ -73,17 +100,26 @@ public class CheckCombinations implements Serializable {
                     iCount++;
                 }
             }
-            //System.out.println(iCount);
             if(iCount>4&&combination.size()>5){
                 while (combination.size()>5)combination.remove(0);
-                if(combination.get(combination.size()-1).rate.equals("14"))System.out.println("ROYAL FLUSH OF:");
+                if(combination.get(combination.size()-1).rate.equals("14")){
+                    combinationPower = mapCombinationsPower.get("ROYAL FLUSH");
+                    System.out.println("ROYAL FLUSH OF:");
+                }
             }
             else if(iCount>4){
                 System.out.println("STRAIGHT FLUSH OF :");
+                combinationPower = mapCombinationsPower.get("STRAIGHT FLUSH");
             }
-            else System.out.println("FLUSH OF :");
+            else {
+                System.out.println("FLUSH OF :");
+                combinationPower = mapCombinationsPower.get("FLUSH");
+            }
         }
         combination.forEach(card -> System.out.println(card.rate + " " + card.SUIT));
+        Game.vAnimateValidation(combination);
+        return combinationPower;
     }
+
 
 }

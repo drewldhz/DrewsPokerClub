@@ -1,4 +1,6 @@
-package sample;
+package GameService;
+
+
 
 import java.io.Serializable;
 

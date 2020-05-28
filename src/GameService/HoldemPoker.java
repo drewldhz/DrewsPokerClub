@@ -1,4 +1,9 @@
-package sample;
+package GameService;
+
+import Deck.Card;
+import Deck.Deck;
+import Player.CheckCombinations;
+import Player.RoundStakes;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

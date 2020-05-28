@@ -1,18 +1,18 @@
-package sample;
+package GameService;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+import Deck.Card;
+import Deck.Deck;
+import Player.Player;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
-import javafx.scene.Group;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
@@ -20,6 +20,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
+
 
 
 public class Game {
@@ -83,7 +84,7 @@ public class Game {
 
     public static Label stakeLabel;
 
-    static String filePathCard = "C:/ShitCode/firstUI/src/assets/Deck/";
+    static String filePathCard = "C:/ShitCode/DrewsPokerClub/src/assets/Deck/";
 
     public static int iStake = 0;
 
@@ -110,17 +111,11 @@ public class Game {
 
     public static ImageView c2;
 
-    static ArrayList<ImageView> imageViews = new ArrayList<>();
+    static ArrayList<ImageView> imageViews;
 
     @FXML
     void initialize() {
-        imageViews.add(f1);
-        imageViews.add(f2);
-        imageViews.add(f3);
-        imageViews.add(c1);
-        imageViews.add(c2);
-        imageViews.add(t1);
-        imageViews.add(r1);
+
 
         accountScore = accountLabel;
         stakeSpin = stakeSpinner;
@@ -128,7 +123,6 @@ public class Game {
         chat = chatArea;
         stakeLabel = myStakeLabel;
 
-        //chatArea.setText("Hello");
         f1 = firstFlop;
         f2 = secondFlop;
         f3 = thirdFlop;
@@ -180,29 +174,6 @@ public class Game {
     }
 
 
-
-    void extractFlop(){
-        ArrayList<ImageView> cards = new ArrayList<>();
-        cards.add(firstFlop);
-        cards.add(secondFlop);
-        cards.add(thirdFlop);
-        for(ImageView imageCard: cards){
-            Card card = Deck.extractCard();
-            //System.out.println(filePathCard+card.SUIT+"/"+card.rate+".jpg");
-            File fileCard = new File(filePathCard+card.SUIT+"/"+card.rate+".jpg");
-            imageCard.setImage(new Image(fileCard.toURI().toString()));
-            /*FadeTransition ft = new FadeTransition();
-            ft.setNode(imageCard);
-            ft.setDuration(Duration.millis(2000));
-            ft.setFromValue(1.0);
-            ft.setToValue(0.0);
-            ft.setCycleCount(2);
-            ft.setAutoReverse(true);
-            ft.play();*/
-        }
-        System.out.println(Deck.shuffledDeck.size()+" карт осталось в колоде");
-    }
-
    public void makeStake(){
         // Adding Listener to value property.
         stakeSpinner.valueProperty().addListener(new ChangeListener<Number>() {
@@ -210,12 +181,9 @@ public class Game {
                 public void changed(ObservableValue<? extends Number> changed, Number oldValue, Number newValue){
                     myStakeLabel.setText(String.valueOf(Math.round(newValue.doubleValue())));
                     iStake = Integer.parseInt(myStakeLabel.getText());
-                    if(iStake==stakeSpinner.getMin()){
-                        applyButton.setText("Call");
-                    }
-                    else  if(iStake>stakeSpinner.getMin()){
-                        applyButton.setText("raise");
-                    }
+                    if(iStake==stakeSpinner.getMin()&&stakeSpinner.getMin()!=0)applyButton.setText("Call");
+                    else  if(iStake>stakeSpinner.getMin())applyButton.setText("raise");
+                    else  if(iStake==stakeSpinner.getMin()&&stakeSpinner.getMin()==0)applyButton.setText("Check");
                 }
             });
     }
@@ -233,21 +201,28 @@ public class Game {
     }
 
     public static void vAnimateValidation(ArrayList<Card> cards){
+        imageViews = new ArrayList<>();
+        imageViews.add(c1);
+        imageViews.add(c2);
+        imageViews.add(f1);
+        imageViews.add(f2);
+        imageViews.add(f3);
+        imageViews.add(t1);
+        imageViews.add(r1);
         for (Card card: cards){
-            Image img = new Image(filePathCard+card.SUIT+"/"+card.rate+".jpg");
+            String sIMG = filePathCard+card.SUIT+"/"+card.rate+".jpg";
             for(ImageView imageView: imageViews){
-                if(imageView.getImage().equals(img)){
-                    System.out.println("IMG");
-                    FadeTransition ft = new FadeTransition();
-                    ft.setNode(imageView);
-                    ft.setDuration(Duration.millis(2000));
-                    ft.setFromValue(1.0);
-                    ft.setToValue(0.0);
-                    ft.setCycleCount(2);
-                    ft.setAutoReverse(true);
-                    ft.play();
-                }
-            }
+               if(imageView.getImage().getUrl().substring(6).equals(sIMG)){
+                   FadeTransition ft = new FadeTransition();
+                   ft.setNode(imageView);
+                   ft.setDuration(Duration.millis(2000));
+                   ft.setFromValue(1.0);
+                   ft.setToValue(0.0);
+                   ft.setCycleCount(10 );
+                   ft.setAutoReverse(true);
+                   ft.play();
+               }
+           }
         }
     }
 

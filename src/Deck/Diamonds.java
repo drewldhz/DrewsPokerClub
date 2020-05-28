@@ -1,9 +1,9 @@
-package sample;
+package Deck;
 
-public class Hearts extends Card {
+public class Diamonds extends Card {
     private String rate;
-    private final String SUIT = "Hearts";
-    public Hearts(String rate){
+    private final String SUIT = "Diamonds";
+    public Diamonds(String rate){
         this.rate = rate;
         super.rate = rate;
         super.SUIT = SUIT;
