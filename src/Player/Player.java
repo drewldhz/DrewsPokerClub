@@ -1,9 +1,13 @@
 package Player;
 
 import Deck.*;
+import javafx.application.Platform;
 import javafx.scene.image.Image;
 import GameService.Game;
 import GameService.GameInfo;
+import sample.Flop;
+import sample.River;
+import sample.Turn;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,9 +26,6 @@ public class Player extends Thread{
     volatile public static int acc = 10;
     //To do: make enum
     private final String requestBid = "your bid mr.";
-    private final String requestFlop = "open flop";
-    private final String requestTurn = "open turn";
-    private final String requestRiver = "open river";
     String filePathCard = "C:/ShitCode/DrewsPokerClub/src/assets/Deck/";
     Socket socket;
     RoundStakes myBid = new RoundStakes(0, name);
@@ -90,48 +91,49 @@ public class Player extends Thread{
                 }
             }
             //Open flop
-            if(receivedMessage!=null && receivedMessage instanceof String && receivedMessage.equals(requestFlop)) {
-                //System.out.println(name +" "+ receivedMessage);
-                try {
-                    Card card = receiveCard();
-                    File fileCard = new File(filePathCard + card.SUIT + "/" + card.rate + ".jpg");
-                    cardsOnTable.add(card);
-                    Game.chat.appendText("карта на flop : " + vCheckInstance(card)+"\n");
-                    //System.out.println(name + " увидел карту на флопе : " + vCheckInstance(card) + ", карт на столе " + cardsOnTable.size());
-                    if (cardsOnTable.size() == 1) Game.f1.setImage(new Image(fileCard.toURI().toString()));
-                    if (cardsOnTable.size() == 2) Game.f2.setImage(new Image(fileCard.toURI().toString()));
-                    if (cardsOnTable.size() == 3) Game.f3.setImage(new Image(fileCard.toURI().toString()));
-                } catch (IOException | ClassNotFoundException ex) {
-                    ex.printStackTrace();
+            if(receivedMessage!=null && receivedMessage instanceof Flop){
+                Flop flop = (Flop) receivedMessage;
+                if(!flop.getCardsFlop().isEmpty()){
+                    flop.getCardsFlop().forEach(card -> {
+                        Game.chat.appendText("карта на flop : " + vCheckInstance(card)+"\n");
+                        File fileCard = new File(filePathCard + card.SUIT + "/" + card.rate + ".jpg");
+                        cardsOnTable.add(card);
+                        Game.flopCards.get(cardsOnTable.size()-1).setImage(new Image(fileCard.toURI().toString()));
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    });
                 }
+                else Game.chat.appendText("FLOP IS EMPTY!");
             }
             //Open turn
-            if(receivedMessage!=null && receivedMessage instanceof String && receivedMessage.equals(requestTurn)) {
+            if(receivedMessage!=null && receivedMessage instanceof Turn) {
                 //System.out.println(name +" "+ receivedMessage);
+                Card card = ((Turn) receivedMessage).getTurnCard();
+                Game.chat.appendText("карта на turn : " + vCheckInstance(card)+"\n");
+                File fileCard = new File(filePathCard + card.SUIT + "/" + card.rate + ".jpg");
+                cardsOnTable.add(card);
+                if (cardsOnTable.size() == 4) Game.t1.setImage(new Image(fileCard.toURI().toString()));
                 try {
-                    Card card = receiveCard();
-                    File fileCard = new File(filePathCard + card.SUIT + "/" + card.rate + ".jpg");
-                    cardsOnTable.add(card);
-                    Game.chat.appendText("карта на turn : " + vCheckInstance(card)+"\n");
-                    //System.out.println(name + " увидел карту на turn : " + vCheckInstance(card) + ", карт на столе " + cardsOnTable.size());
-                    if (cardsOnTable.size() == 4) Game.t1.setImage(new Image(fileCard.toURI().toString()));
-                } catch (IOException | ClassNotFoundException ex) {
-                    ex.printStackTrace();
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
             //Open river
-            if(receivedMessage!=null && receivedMessage instanceof String && receivedMessage.equals(requestRiver)) {
+            if(receivedMessage!=null && receivedMessage instanceof River) {
                 //System.out.println(name +" "+ receivedMessage);
+                Card card = ((River) receivedMessage).getRiverCard();
+                Game.chat.appendText("карта на river : " + vCheckInstance(card)+"\n");
+                File fileCard = new File(filePathCard + card.SUIT + "/" + card.rate + ".jpg");
+                cardsOnTable.add(card);
+                if (cardsOnTable.size() == 5) Game.r1.setImage(new Image(fileCard.toURI().toString()));
                 try {
-                    Card card = receiveCard();
-                    File fileCard = new File(filePathCard + card.SUIT + "/" + card.rate + ".jpg");
-                    cardsOnTable.add(card);
-                    Game.chat.appendText("карта на river : " + vCheckInstance(card)+"\n");
-                    //System.out.println(name + " увидел карту на river : " + vCheckInstance(card) + ", карт на столе " + cardsOnTable.size());
-                    if (cardsOnTable.size() == 5) Game.r1.setImage(new Image(fileCard.toURI().toString()));
-
-                } catch (IOException | ClassNotFoundException ex) {
-                    ex.printStackTrace();
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
             //Request Bid

@@ -4,6 +4,10 @@ import Deck.Card;
 import Deck.Deck;
 import Player.CheckCombinations;
 import Player.RoundStakes;
+import sample.Flop;
+import sample.GameRound;
+import sample.River;
+import sample.Turn;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -39,10 +43,10 @@ public class HoldemPoker {
             }
             //инициировать торги - bidding
             if(!bidding)vRequestBidding(playerHands);
-           if(!flopOpened && bidding){
+            if(!flopOpened && bidding){
                 //Game.chat.setText("Раздача на Flop");
-
-                vDealTheCardsToTable(playerHands,3);
+                vDealTheCardsToTable(playerHands, new Flop());
+                //vDealTheCardsToTable(playerHands,3);
                 flopOpened = true;
                 actualMessage = "Раздача на flop прошла...торги на flop";
                 System.out.println(actualMessage);
@@ -53,8 +57,7 @@ public class HoldemPoker {
            //Open turn
             if(!turnOpened && flopOpened && bidding){
                 //Game.chat.setText("Раздача на Turn");
-                System.out.println("Раздача на Turn");
-                vDealTheCardsToTable(playerHands,1);
+                vDealTheCardsToTable(playerHands, new Turn());
                 turnOpened = true;
                 actualMessage = "Раздача на turn прошла...торги на turn";
                 System.out.println(actualMessage);
@@ -64,7 +67,7 @@ public class HoldemPoker {
             //Open river
             if(!riverOpened && turnOpened && bidding){
                 System.out.println("Раздача на River");
-                vDealTheCardsToTable(playerHands,1);
+                vDealTheCardsToTable(playerHands, new River());
                 riverOpened = true;
                 actualMessage = "Раздача на river прошла...торги на river";
                 System.out.println(actualMessage);
@@ -101,68 +104,20 @@ public class HoldemPoker {
         }
     }
 
-    public void vDealTheCardsToTable(LinkedList<Socket> playerTable, int quantityCards) throws IOException {
-        int iCountCards = 0;
-        while (iCountCards<quantityCards) {
-            if(quantityCards==3&&!flopOpened){
-                System.out.println("Раздача на Flop");
-                Card card = Deck.extractCard();
-                playerTable.forEach(player-> {
-                    try {
-                        sendMessage(player, "open flop");
-                        sendMessage(player,card);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                });
-                iCountCards++;
+    public void vDealTheCardsToTable(LinkedList<Socket> playerTable, GameRound gameRound) throws IOException {
+        playerTable.forEach(socket -> {
+            try {
+                sendMessage(socket, gameRound);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            if(quantityCards==1 && !turnOpened && flopOpened){
-                Card card = Deck.extractCard();
-                playerTable.forEach(player-> {
-                    try {
-                        sendMessage(player, "open turn");
-                        sendMessage(player,card);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                });
-                iCountCards++;
-            }
-            if(quantityCards==1 && !riverOpened && turnOpened){
-                Card card = Deck.extractCard();
-                playerTable.forEach(player-> {
-                    try {
-                        sendMessage(player, "open river");
-                        sendMessage(player,card);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                });
-                iCountCards++;
-            }
+        });
             bidding = false;
             try {
                 Thread.currentThread().sleep(2000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }
     }
 
     public void sendMessage(Socket socket, Object message) throws IOException
@@ -225,30 +180,6 @@ public class HoldemPoker {
                 sendMessage(player, new CheckCombinations());
             }
         }
-    }
-
-    public int vBidding(RoundStakes myBid, int max){
-        boolean nextRound = false;
-        int maxBid = max;
-        String wordFromPlayer = "";
-        if(myBid.getRate()>maxBid){
-            maxBid = myBid.getRate();
-            wordFromPlayer = " повышает ставку ";
-            System.out.println(myBid.getPlayerName()+wordFromPlayer+" : ставка "+myBid.getRate());
-        }
-        else if(myBid.getRate()==maxBid){
-            wordFromPlayer = " уравнивает ставку ";
-            System.out.println(myBid.getPlayerName()+wordFromPlayer+" : ставка "+myBid.getRate());
-        }
-        else if(myBid.getRate()==0){
-            wordFromPlayer = " пропускает ход торгов ";
-            System.out.println(myBid.getPlayerName()+wordFromPlayer+" : ставка "+myBid.getRate());
-        }
-        else if(myBid.getRate()<0){
-            wordFromPlayer = " сбрасывает карты ";
-            System.out.println(myBid.getPlayerName()+wordFromPlayer+" : ставка "+myBid.getRate());
-        }
-        return maxBid;
     }
 
     void prepareNewRoundOfBidding(LinkedList<Socket> players){

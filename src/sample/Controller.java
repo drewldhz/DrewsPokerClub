@@ -13,8 +13,10 @@ import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import GameService.Game;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 public class Controller {
@@ -39,18 +41,14 @@ public class Controller {
             startGameButton.getScene().getWindow().hide();
             Thread server = new Thread(new GameService());
 
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/sample/app.fxml"));
+
+            Game game = new Game();
             try {
-                loader.load();
-            } catch (IOException e) {
+                game.start(new Stage());
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-            Parent root = loader.getRoot();
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
 
-            stage.show();
 
             Thread player = null;
             try {

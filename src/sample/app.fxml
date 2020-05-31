@@ -21,7 +21,7 @@
                         <Font name="Broadway" size="36.0" />
                     </font>
                 </Label>
-            <GridPane layoutX="400.0" layoutY="540.0" prefHeight="174.0" prefWidth="236.0">
+            <GridPane layoutX="425.0" layoutY="640.0" prefHeight="93.0" prefWidth="126.0">
               <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -30,19 +30,19 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <ImageView fx:id="card2" fitHeight="181.0" fitWidth="151.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1">
+                  <ImageView fx:id="card2" fitHeight="99.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1">
                      <image>
                         <Image url="@../assets/Deck/back.jpg" />
                      </image>
                   </ImageView>
-                  <ImageView fx:id="card1" fitHeight="181.0" fitWidth="151.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="card1" fitHeight="93.0" fitWidth="126.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../assets/Deck/back.jpg" />
                      </image>
                   </ImageView>
                </children>
             </GridPane>
-            <GridPane layoutX="227.0" layoutY="203.0" prefHeight="181.0" prefWidth="570.0">
+            <GridPane layoutX="323.0" layoutY="475.0" prefHeight="93.0" prefWidth="304.0">
               <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -54,47 +54,46 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <ImageView id="firstFlop" fx:id="firstFlop" fitHeight="181.0" fitWidth="151.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView id="firstFlop" fx:id="firstFlop" fitHeight="93.0" fitWidth="126.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../assets/Deck/back.jpg" />
                      </image>
                   </ImageView>
-                  <ImageView id="secondFlop" fx:id="secondFlop" fitHeight="181.0" fitWidth="151.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1">
+                  <ImageView id="secondFlop" fx:id="secondFlop" fitHeight="93.0" fitWidth="126.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1">
                      <image>
                         <Image url="@../assets/Deck/back.jpg" />
                      </image>
                   </ImageView>
-                  <ImageView id="thirdFlop" fx:id="thirdFlop" fitHeight="181.0" fitWidth="151.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2">
+                  <ImageView id="thirdFlop" fx:id="thirdFlop" fitHeight="93.0" fitWidth="126.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2">
                      <image>
                         <Image url="@../assets/Deck/back.jpg" />
                      </image>
                   </ImageView>
-                  <ImageView id="turn" fx:id="turn" fitHeight="181.0" fitWidth="151.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3">
+                  <ImageView id="turn" fx:id="turn" fitHeight="93.0" fitWidth="126.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3">
                      <image>
                         <Image url="@../assets/Deck/back.jpg" />
                      </image>
                   </ImageView>
-                  <ImageView id="river" fx:id="river" fitHeight="181.0" fitWidth="151.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4">
+                  <ImageView id="river" fx:id="river" fitHeight="93.0" fitWidth="126.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4">
                      <image>
                         <Image url="@../assets/Deck/back.jpg" />
                      </image>
                   </ImageView>
                </children>
             </GridPane>
-            <Slider fx:id="stakeSpinner" layoutX="713.0" layoutY="529.0" max="10000.0" orientation="VERTICAL" prefHeight="181.0" prefWidth="14.0" />
-            <TextArea fx:id="chatArea" layoutX="153.0" layoutY="533.0" opacity="0.22" prefHeight="181.0" prefWidth="219.0">
+            <Slider fx:id="stakeSpinner" layoutX="577.0" layoutY="627.0" max="10000.0" orientation="VERTICAL" prefHeight="107.0" prefWidth="14.0" />
+            <TextArea fx:id="chatArea" layoutX="14.0" layoutY="41.0" opacity="0.22" prefHeight="107.0" prefWidth="265.0">
                <font>
                   <Font name="Microsoft JhengHei Light" size="10.0" />
                </font>
             </TextArea>
-            <Button fx:id="applyButton" layoutX="764.0" layoutY="685.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="45.0" text="Aplly" />
-            <Button fx:id="fauldButton" layoutX="823.0" layoutY="685.0" mnemonicParsing="false" text="Fauld" />
-            <Label fx:id="myStakeLabel" layoutX="764.0" layoutY="567.0" prefHeight="43.0" prefWidth="117.0" text="0" textFill="#ccd338">
+            <Button fx:id="fauldButton" layoutX="684.0" layoutY="708.0" mnemonicParsing="false" text="Fauld" />
+            <Label fx:id="myStakeLabel" layoutX="604.0" layoutY="627.0" prefHeight="25.0" prefWidth="75.0" text="0" textFill="#ccd338">
                <font>
-                  <Font name="Berlin Sans FB Demi Bold" size="36.0" />
+                  <Font name="Berlin Sans FB Demi Bold" size="14.0" />
                </font>
             </Label>
-            <Label fx:id="accountLabel" layoutX="764.0" layoutY="627.0" prefHeight="41.0" prefWidth="132.0" textFill="#05e308">
+            <Label fx:id="accountLabel" layoutX="624.0" layoutY="650.0" prefHeight="30.0" prefWidth="105.0" textFill="#05e308">
                <font>
                   <Font size="20.0" />
                </font>
@@ -109,6 +108,16 @@
                   <Font name="Arial Black" size="28.0" />
                </font>
             </Label>
+            <GridPane layoutX="412.0" layoutY="329.0" prefHeight="93.0" prefWidth="126.0">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+            </GridPane>
+            <Button fx:id="newApply" layoutX="607.0" layoutY="708.0" mnemonicParsing="false" text="newApply" />
             </children></AnchorPane>
     </children>
     <columnConstraints>

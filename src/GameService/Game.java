@@ -1,7 +1,9 @@
 package GameService;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
@@ -9,24 +11,43 @@ import Deck.Card;
 import Deck.Deck;
 import Player.Player;
 import javafx.animation.FadeTransition;
+import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Group;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 import javafx.util.Duration;
+import sample.Flop;
+import sample.GameRound;
+import sample.PlayerUI;
 
 
-
-public class Game {
+public class Game extends Application {
     double dX;
     double dY;
-    int iNumCard = 2;
+
+    public static Pane appRoot = new Pane();
+    public static Pane gameRoot;//информация игроков
+    public static boolean flag = false;
+    public static ArrayList<PlayerUI> playerUIS = new ArrayList<>();
+    public static Stage st;
+    public static ArrayList<ImageView> flopCards;
+
+
+
+
     @FXML
     private ResourceBundle resources;
 
@@ -102,6 +123,10 @@ public class Game {
 
     public static Label bankLabel;
 
+    @FXML
+    private Button newApply;
+
+    int X = 10;
 
 
     @FXML
@@ -113,19 +138,26 @@ public class Game {
 
     static ArrayList<ImageView> imageViews;
 
+    public static Group group = new Group();
+
     @FXML
     void initialize() {
-
+        System.out.println("initialize()");
+        f1 = firstFlop;
+        f2 = secondFlop;
+        f3 = thirdFlop;
+        flopCards = new ArrayList<>(3);
+        flopCards.add(f1);
+        flopCards.add(f2);
+        flopCards.add(f3);
 
         accountScore = accountLabel;
         stakeSpin = stakeSpinner;
         bankLabel = bankScore;
         chat = chatArea;
         stakeLabel = myStakeLabel;
+        applyButton = new Button();
 
-        f1 = firstFlop;
-        f2 = secondFlop;
-        f3 = thirdFlop;
         t1 = turn;
         r1 = river;
         c1 = card1;
@@ -135,8 +167,14 @@ public class Game {
         imageDrags(card1);
         imageDrags(card2);
         makeStake();
+        GameRound flop = new Flop();
+        flop.vDealCardsToPlayers();
+        if(flop instanceof Flop){
+            ((Flop) flop).getCardsFlop().forEach(card -> System.out.println(card.rate+" "+card.SUIT));
+        }
 
-        applyButton.setOnMouseClicked(e->{
+
+        newApply.setOnMouseClicked(e->{
             if(stakeSpinner.getValue()>=stakeSpinner.getMin())bReadyStake = true;
         });
 
@@ -146,6 +184,8 @@ public class Game {
             accountScore.setText(String.valueOf(Player.acc));
             bReadyStake = true;
         });
+
+
 
     }
 
@@ -160,19 +200,6 @@ public class Game {
         });
 
     }
-
-    void extractCards(){
-            ArrayList<ImageView> cards = new ArrayList<>();
-            cards.add(card1);
-            cards.add(card2);
-            for(ImageView imageCard: cards){
-                Card card = Deck.extractCard();
-                //System.out.println(filePathCard+card.SUIT+"/"+card.rate+".jpg");
-                File fileCard = new File(filePathCard+card.SUIT+"/"+card.rate+".jpg");
-                imageCard.setImage(new Image(fileCard.toURI().toString()));
-            }
-    }
-
 
    public void makeStake(){
         // Adding Listener to value property.
@@ -226,5 +253,46 @@ public class Game {
         }
     }
 
+    public void update(boolean flag){
 
+    }
+
+    @Override
+    public void start(Stage stage) throws Exception {
+        st = stage;
+
+       Scene scene = new Scene(createContent());
+       stage.setScene(scene);
+       stage.show();
+    }
+
+    public Parent createContent(){
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("/sample/app.fxml"));
+        try {
+            loader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        gameRoot = loader.getRoot();
+        appRoot.getChildren().addAll(gameRoot);
+        return appRoot;
+    }
+
+    public static void createPlayer(){
+        PlayerUI playerUI = new PlayerUI();
+        playerUIS.add(playerUI);
+        Platform.runLater(()->appRoot.getChildren().add(playerUI));
+        Pane pane = new Pane();
+        pane.getChildren().addAll(appRoot);
+        Scene scene = new Scene(pane);
+        Platform.runLater(()->st.setScene(scene));
+    }
+
+    public static void showCards(){
+        String sIMG = filePathCard+"Diamonds"+"/"+"14"+".jpg";
+        File fileCard = new File(sIMG);
+        Image image = new Image(fileCard.toURI().toString());
+        playerUIS.forEach(playerUI -> playerUI.setCards(image));
+    }
 }

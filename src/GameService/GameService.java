@@ -2,6 +2,8 @@ package GameService;
 
 import Deck.Card;
 import Player.Player;
+import javafx.application.Platform;
+import sample.PlayerUI;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -37,7 +39,11 @@ public class GameService extends  Thread{
                 while(socketList.size()<iCountPlayers){
                     playerSocket = serverSocket.accept();
                     socketList.add(playerSocket); // добавить новое соединенние в список
-                    //System.out.println("Подключено "+ socketList.size());
+                    //Game.flag = true;
+                    Game.createPlayer();
+                    //Platform.runLater(()->Game.createPlayer(0,7));
+
+                    System.out.println("Подключено "+ socketList.size());
                     //System.out.println("Ждем остальных игроков...");
                     Game.chat.appendText("Подключено "+ socketList.size()+"\n");
                     Game.chat.appendText("Ждем остальных игроков..."+"\n");
@@ -52,6 +58,11 @@ public class GameService extends  Thread{
                 }
                 //System.out.println("Понеслась");
                 Game.chat.appendText("Round "+" started+\n");
+                //Game.appRoot.getChildren().forEach(node -> {
+                //    if(node instanceof PlayerUI){
+                //        ((PlayerUI) node).setLabelText("ждет действий...");
+                //    }
+                //});
 
                try {
                     new HoldemPoker(socketList);
@@ -86,4 +97,6 @@ public class GameService extends  Thread{
         Object object = messageFromServer.readObject();
         return object;
     }
+
+
 }
