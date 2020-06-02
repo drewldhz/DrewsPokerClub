@@ -167,11 +167,6 @@ public class Game extends Application {
         imageDrags(card1);
         imageDrags(card2);
         makeStake();
-        GameRound flop = new Flop();
-        flop.vDealCardsToPlayers();
-        if(flop instanceof Flop){
-            ((Flop) flop).getCardsFlop().forEach(card -> System.out.println(card.rate+" "+card.SUIT));
-        }
 
 
         newApply.setOnMouseClicked(e->{
@@ -279,14 +274,15 @@ public class Game extends Application {
         return appRoot;
     }
 
-    public static void createPlayer(){
-        PlayerUI playerUI = new PlayerUI();
+    public static PlayerUI createPlayer(String name){
+        PlayerUI playerUI = new PlayerUI(name);
         playerUIS.add(playerUI);
         Platform.runLater(()->appRoot.getChildren().add(playerUI));
         Pane pane = new Pane();
         pane.getChildren().addAll(appRoot);
         Scene scene = new Scene(pane);
         Platform.runLater(()->st.setScene(scene));
+        return playerUI;
     }
 
     public static void showCards(){
@@ -295,4 +291,6 @@ public class Game extends Application {
         Image image = new Image(fileCard.toURI().toString());
         playerUIS.forEach(playerUI -> playerUI.setCards(image));
     }
+
+
 }

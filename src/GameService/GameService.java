@@ -11,7 +11,9 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 public class GameService extends  Thread{
     private static final int PORT = 10000;
@@ -20,8 +22,9 @@ public class GameService extends  Thread{
     public static LinkedList<Player> playersList = new LinkedList<>(); // список всех игроков
     Socket playerSocket;
     public static int counter = 0;
-    private int iCountPlayers = 1;
+    private int iCountPlayers = 2;
     public LinkedList<Socket> socketList;
+    public static Map<Socket, String> playersMap = new HashMap<>();
 
 
 
@@ -39,17 +42,35 @@ public class GameService extends  Thread{
                 while(socketList.size()<iCountPlayers){
                     playerSocket = serverSocket.accept();
                     socketList.add(playerSocket); // добавить новое соединенние в список
-                    //Game.flag = true;
-                    Game.createPlayer();
-                    //Platform.runLater(()->Game.createPlayer(0,7));
+                    String name = (String)(receiveMessage(playerSocket));
+                    System.out.println(name);
+                    playersMap.put(playerSocket, name);
+
 
                     System.out.println("Подключено "+ socketList.size());
-                    //System.out.println("Ждем остальных игроков...");
                     Game.chat.appendText("Подключено "+ socketList.size()+"\n");
                     Game.chat.appendText("Ждем остальных игроков..."+"\n");
 
                 }
                 //System.out.println("Все игроки подключены , количество игроков "+socketList.size());
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                socketList.forEach(socket -> {
+                    playersMap.forEach((socket1, s) -> {
+                        try {
+                            if(!socket.equals(socket1)){
+                                SignalToCreatePlayer signalToCreatePlayer = new SignalToCreatePlayer();
+                                signalToCreatePlayer.setName(s);
+                                sendMessage(socket,signalToCreatePlayer);
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                });
                 Game.chat.appendText("Все игроки подключены , количество игроков "+socketList.size()+"\n");
                 try {
                     Thread.sleep(1000);
@@ -58,11 +79,7 @@ public class GameService extends  Thread{
                 }
                 //System.out.println("Понеслась");
                 Game.chat.appendText("Round "+" started+\n");
-                //Game.appRoot.getChildren().forEach(node -> {
-                //    if(node instanceof PlayerUI){
-                //        ((PlayerUI) node).setLabelText("ждет действий...");
-                //    }
-                //});
+
 
                try {
                     new HoldemPoker(socketList);
@@ -71,7 +88,7 @@ public class GameService extends  Thread{
                 }
 
 
-            } catch (IOException ex) {
+            } catch (IOException | ClassNotFoundException ex) {
                 ex.printStackTrace();
             } finally {
             try {
@@ -83,11 +100,9 @@ public class GameService extends  Thread{
 
     }
 
-    public void sendMessage(Socket socket, Card card) throws IOException {
-        ObjectOutputStream testToClient = new ObjectOutputStream(socket.getOutputStream());
-        testToClient.writeObject(card);
-        testToClient.flush();
-        testToClient.close();
+    public void sendMessage(Socket socket, Object object) throws IOException {
+        ObjectOutputStream messageToPlayers = new ObjectOutputStream(socket.getOutputStream());
+        messageToPlayers.writeObject(object);
     }
 
 

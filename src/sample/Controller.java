@@ -52,7 +52,7 @@ public class Controller {
 
             Thread player = null;
             try {
-                player = new Thread(new Player("player1"));
+                player = new Thread(new Player(Player.nickName));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -62,23 +62,16 @@ public class Controller {
         });
 
         connectButton.setOnAction(actionEvent -> {
-
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/sample/app.fxml"));
+            Game game = new Game();
             try {
-                loader.load();
-            } catch (IOException e) {
+                game.start(new Stage());
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-
-            root = loader.getRoot();
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.show();
             //stage.showAndWait();
             Thread player = null;
             try {
-                player = new Thread(new Player("Server"));
+                player = new Thread(new Player("Client1"));
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -3,6 +3,8 @@ package GameService;
 import Deck.Card;
 import Deck.Deck;
 import Player.CheckCombinations;
+import Player.Player;
+import Player.PlayerHand;
 import Player.RoundStakes;
 import sample.Flop;
 import sample.GameRound;
@@ -14,7 +16,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 public class HoldemPoker {
     private final int handSize = 2;
@@ -32,6 +36,7 @@ public class HoldemPoker {
     public Socket raisedPlayerSocket = null;
     public RoundStakes stake;
     public boolean roundEnd = false;
+    public Map<Socket, PlayerHand> mapPlayerHands = new HashMap<Socket, PlayerHand>();
     public HoldemPoker(LinkedList<Socket> playerHands) throws IOException, ClassNotFoundException {
         String actualMessage = "";
         while (gameState){
@@ -73,7 +78,9 @@ public class HoldemPoker {
                 System.out.println(actualMessage);
                 bidding = false;
                 biddingEnd = false;
+
             }
+
         }
     }
 
@@ -178,7 +185,9 @@ public class HoldemPoker {
             roundEnd=true;
             for(Socket player: players){
                 sendMessage(player, new CheckCombinations());
+
             }
+            checkWinner(players);
         }
     }
 
@@ -197,6 +206,29 @@ public class HoldemPoker {
                 e.printStackTrace();
             }
         }
+
+    }
+
+    void checkWinner(LinkedList<Socket> playerHands){
+        System.out.println("CHECK WINNER");
+        playerHands.forEach(socket -> {
+            try {
+                if(!GameService.playersMap.get(socket).equals(Player.nickName))
+                    mapPlayerHands.put(socket,(PlayerHand)receiveMessage(socket));
+
+                mapPlayerHands.forEach((socket1, playerHand) -> {
+                    playerHand.getHand().forEach(card ->{
+                        System.out.println(card.rate+" "+card.SUIT);
+                        
+                    });
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        });
+        System.out.println("count player hands"+mapPlayerHands.size());
 
     }
 }

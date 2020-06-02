@@ -1,11 +1,13 @@
 package Player;
 
 import Deck.*;
+import GameService.SignalToCreatePlayer;
 import javafx.application.Platform;
 import javafx.scene.image.Image;
 import GameService.Game;
 import GameService.GameInfo;
 import sample.Flop;
+import sample.PlayerUI;
 import sample.River;
 import sample.Turn;
 
@@ -16,11 +18,14 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Player extends Thread{
     public static int iHandSize = 2;
     public ArrayList<Card> hand = new ArrayList<>(iHandSize);
     public ArrayList<Card> cardsOnTable = new ArrayList<>(5);
+    public static String nickName = "Server";
     private String name;
     private int account = 10;
     volatile public static int acc = 10;
@@ -33,6 +38,7 @@ public class Player extends Thread{
     public int callBid = 0;
     public int bid = 0;
     public int bankScore = 0;
+    static public Map<String, PlayerUI> mapPlayersUI = new HashMap<>();
 
 
     public static int counter = 0;
@@ -54,11 +60,13 @@ public class Player extends Thread{
         System.out.println(socket);
         try {
             socket = new Socket(InetAddress.getLocalHost(), 10000);
-        } catch (IOException e) {
+            SendResponseToGameService(nickName);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         int iCountCards = 0;
         while (true){
+
             Game.vSetAccount(account);
             Object receivedMessage = null;
             try {
@@ -67,6 +75,13 @@ public class Player extends Thread{
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
+            }
+            //Create players
+            if(receivedMessage!=null && receivedMessage instanceof SignalToCreatePlayer){
+                SignalToCreatePlayer signalToCreatePlayer = (SignalToCreatePlayer) receivedMessage;
+                System.out.println(signalToCreatePlayer.name+"LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL");
+                mapPlayersUI.put(signalToCreatePlayer.name,Game.createPlayer(signalToCreatePlayer.name));
+
             }
             //Receive cards
             if(receivedMessage!=null && receivedMessage instanceof String && receivedMessage.equals("send cards")){
@@ -158,11 +173,7 @@ public class Player extends Thread{
                     }
                 }
                 Integer bidResponse = Game.iStake;
-                //if(Game.stakeSpin.getMin()==bidResponse){
-                //    bid += bidResponse;
-                //    Game.chat
-                //}
-                //else bid = bidResponse;
+
                 bid += bidResponse;
                 account=account-Game.iStake;
 
@@ -186,6 +197,14 @@ public class Player extends Thread{
             }
 
             if(receivedMessage!=null && receivedMessage instanceof CheckCombinations){
+                System.out.println("Проверка комбинаций");
+                try {
+                    SendResponseToGameService(new PlayerHand(hand));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
                 CheckCombinations check = new CheckCombinations();
                 hand.addAll(cardsOnTable);
                 int iPower = check.checkSeq(hand);
@@ -256,5 +275,7 @@ public class Player extends Thread{
             e.printStackTrace();
         }
     }
+
+    
 
 }
