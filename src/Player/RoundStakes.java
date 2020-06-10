@@ -5,10 +5,21 @@ import java.io.Serializable;
 public class RoundStakes implements Serializable {
     private int rate = 0;
     private String playerName = "";
+    private int playersID = 0;
+
+    public int getPlayersID() {
+        return playersID;
+    }
+
+    public void setPlayersID(int playersID) {
+        this.playersID = playersID;
+    }
+
     private int previousBid = 0;
     private int accountPlayer;
     public int bank = 0;
     public boolean raisedPlayer = false;
+
 
     public RoundStakes(int rate, String playerName){
         this.rate = rate;
